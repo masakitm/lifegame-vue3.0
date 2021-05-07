@@ -13,13 +13,16 @@
 					/>
 				</div>
 			</div>
-			<button @click="start">start</button>
-			<button @click="update">update</button>
-			<button @click="init">reset</button>
+
+			<div class="buttons">
+				<button @click="start">start</button>
+				<button @click="stop">stop</button>
+				<button @click="reset">reset</button>
+			</div>
 		</div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, onMounted } from 'vue'
 import Cell from './Cell.vue'
 import { useBoard } from '../hooks/useBoard'
@@ -29,15 +32,7 @@ export default defineComponent({
 		Cell
 	},
 	setup() {
-		const { board, init, updateBoard, calcNextBoard } = useBoard({ cells: 32 })
-
-		const update = () => {
-			updateBoard(calcNextBoard())
-		}
-
-		const start = () => {
-			setInterval(update, 200)
-		}
+		const { board, init, reset, start } = useBoard({ cells: 32 })
 
 		onMounted(() => {
 			init()
@@ -45,9 +40,9 @@ export default defineComponent({
 
 		return {
 			board,
-			init,
-			update,
-			start
+			reset,
+			start,
+			stop
 		}
 	},
 })
@@ -56,5 +51,10 @@ export default defineComponent({
 <style scoped>
 .row {
 	display: flex;
+	justify-content: center;
+}
+
+.buttons {
+	text-align: center;
 }
 </style>

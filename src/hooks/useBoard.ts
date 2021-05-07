@@ -2,8 +2,9 @@ import { reactive, toRefs } from 'vue'
 
 // 型定義
 type Args = {
-	cells: number,
-	threshould: number
+	cells?: number,
+	threshould?: number,
+	interval?: number
 }
 type Row = Array<{ live: boolean, cellId: string }>
 type Board = Row[]
@@ -17,6 +18,8 @@ export function useBoard (args: Args) {
 		id: 0
 	})
 
+	let timer: number = 0;
+
 	// state更新関数
 	const updateBoard = (board: Board) => {
 		state.board = board
@@ -25,6 +28,7 @@ export function useBoard (args: Args) {
 	// 引数展開
 	const cells = (args && args.cells) ? args.cells : 8
 	const threshould = (args && args.threshould) ? args.threshould : 0.2
+	const interval = (args && args.interval) ? args.interval : 200
 
 	// 機能系
 	const createRow = (liveThreshould: number): Row => {
@@ -100,14 +104,33 @@ export function useBoard (args: Args) {
 		return board
 	}
 
+	// 操作系
 	const init = () => {
 		updateBoard(createBoard())
+	}
+
+	const update = () => {
+		updateBoard(calcNextBoard())
+	}
+
+	const start = () => {
+		timer = setInterval(update, interval)
+	}
+
+	const stop = () => {
+		clearInterval(timer)
+	}
+
+	const reset = () => {
+		stop()
+		init()
 	}
 
 	return {
 		...toRefs(state),
 		init,
-		calcNextBoard,
-		updateBoard
+		reset,
+		start,
+		stop
 	}
 }
